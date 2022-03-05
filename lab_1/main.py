@@ -118,17 +118,6 @@ def resample_(image: Image, factor):
         return downsample(image, 1 / factor)
 
 
-img = Image.open(sys.argv[1])
-
-upsample(img, 2).save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_upsampled_nearest" + sys.argv[1][sys.argv[1].find(".bmp"):])
-
-# downsample(img, 2).save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_downsampled_box" + sys.argv[1][sys.argv[1].find(".bmp"):])
-
-_x = 5.12
-
-
-# resample_(img, _x).save(sys.argv[1][:sys.argv[1].find(".bmp")] + f"_{_x}x_resampled_one_way" + sys.argv[1][sys.argv[1].find(".bmp"):])
-
 def grayscale(image: Image, linear_approximation: bool = False):
     width, height = image.size
     gray_img = Image.new('L', (width, height), 'white')
@@ -145,10 +134,7 @@ def grayscale(image: Image, linear_approximation: bool = False):
     return gray_img
 
 
-#grayscale(img, True).save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_gray_linear_approx" + sys.argv[1][sys.argv[1].find(".bmp"):])
-
-
-def binarize(image: Image):
+def binarize(image: Image, invert: bool = False):
     width, height = image.size
     [hist, _] = np.histogram(image, bins=256, range=(0, 255))
     # Normalization
@@ -164,14 +150,18 @@ def binarize(image: Image):
         if max_val < val:
             max_val = val
             threshold = t
-    print(threshold)
+    print(f'Threshold is {threshold}')
     binarized_image = Image.new("1", (width, height), 'white')
     for y in range(height):
         for x in range(width):
             orig_pixel = image.getpixel((x, y))
-            pixel = 0 if orig_pixel < threshold else 255
+            if invert:
+                pixel = 255 if orig_pixel < threshold else 0
+            else:
+                pixel = 0 if orig_pixel < threshold else 255
             binarized_image.putpixel((x, y), pixel)
     return binarized_image
+
 
 def binarize_(image: Image):
     width, height = image.size
@@ -187,7 +177,7 @@ def binarize_(image: Image):
         if max_val < val:
             max_val = val
             threshold = t
-    print(threshold)
+    print(f'Threshold is {threshold}')
     binarized_image = Image.new("1", (width, height), 'white')
     for y in range(height):
         for x in range(width):
@@ -197,6 +187,23 @@ def binarize_(image: Image):
     return binarized_image
 
 
-#binarize(img).save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_binarized" + sys.argv[1][sys.argv[1].find(".bmp"):])
+if __name__ == "__main__":
+    img = Image.open(sys.argv[1])
+    x_up = 10
+    upsample(img, x_up).save(sys.argv[1][:sys.argv[1].find(".bmp")] + f"_{x_up}x_upsampled_nearest" + sys.argv[1][sys.argv[1].find(".bmp"):])
+    #upsample(img, x_up, BILINEAR).save(sys.argv[1][:sys.argv[1].find(".bmp")] + f"_{x_up}x_upsampled_bilinear" + sys.argv[1][sys.argv[1].find(".bmp"):])
 
-print(f"Размер изображения:{img.format, img.size, img.mode, img.getpixel((0, 0))}")
+    # downsample(img, 2).save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_downsampled_box" + sys.argv[1][sys.argv[1].find(".bmp"):])
+
+    _x = 10.5
+
+
+    #resample(img, _x).save(sys.argv[1][:sys.argv[1].find(".bmp")] + f"_{_x}x_resampled_two_way" + sys.argv[1][sys.argv[1].find(".bmp"):])
+    #resample_(img, _x).save(sys.argv[1][:sys.argv[1].find(".bmp")] + f"_{_x}x_resampled_one_way" + sys.argv[1][sys.argv[1].find(".bmp"):])
+
+    #grayscale(img, True).save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_gray_linear_approx" + sys.argv[1][sys.argv[1].find(".bmp"):])
+
+
+    #binarize(img).save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_binarized" + sys.argv[1][sys.argv[1].find(".bmp"):])
+
+    print(f"Размер изображения:{img.format, img.size, img.mode, img.getpixel((0, 0))}")
