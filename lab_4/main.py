@@ -70,10 +70,13 @@ def get_features(img: Image):
     w, h = img.size
     area = w*h
     weight_b = weight_black(img)
-    weight_b_rel = weight_b / area
+    weight_b_rel = weight_b // area
     weight_w = area - weight_b
+    grav_centre_x, grav_centre_y = gravity_centre(img)
+    grav_centre_x_rel, grav_centre_y = ((grav_centre_x - 1) / w, (grav_centre_y - 1) / h)
 
-def gravity_centre(img:Image):
+
+def gravity_centre(img: Image):
     w, h = img.size
     centre_x = 0
     centre_y = 0
@@ -81,6 +84,21 @@ def gravity_centre(img:Image):
         for x in range(w):
             if img.getpixel((x, y)) == 0:
                 centre_x += x
+                centre_y += y
+    weight = weight_black(img)
+    return centre_x // weight, centre_y // weight
+
+
+def inertial_moments(img: Image):
+    w, h = img.size
+    grav_centre_x, grav_centre_y = gravity_centre(img)
+    inert_x, inert_y = 0, 0
+    for y in range(h):
+        for x in range(w):
+            if img.getpixel((x, y)) == 0:
+                inert_x += (x-grav_centre_x) ** 2
+                inert_y += (y-grav_centre_y) ** 2
+    return inert_x, inert_y
 
 
 #generate_letters('C:/Windows/Fonts/timesi.ttf', 52)
