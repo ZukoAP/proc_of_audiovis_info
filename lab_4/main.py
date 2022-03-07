@@ -11,10 +11,10 @@ def generate_letters(font_path, font_size: int):
     font = ImageFont.truetype(font_path, font_size)
     for i in range(ord('a'), ord('z') + 1):
         w, h = font.getsize(chr(i))
-        img = Image.new('L', (w, h), 'white')
+        img = Image.new('L', (2 * w, 2 * h), 'white')
         draw = ImageDraw.Draw(img)
-        w, h = draw.textsize(chr(i), font=font)
-        draw.text((w / 2, h / 2), chr(i), font=font, fill='black', anchor="mm")
+        W, H = draw.textsize(chr(i), font=font)
+        draw.text((w, h), chr(i), font=font, fill='black', anchor="mm")
         newpath = f'./letters/{chr(i)}'
         if not os.path.exists(newpath):
             os.makedirs(newpath)
@@ -145,20 +145,21 @@ def profile(img: Image, name):
     plt.close()
 
 
-# generate_letters('C:/Windows/Fonts/timesi.ttf', 52)
-generate_letters('./elvish ring nfi.ttf', 60)
+if __name__ == "__main__":
+    # generate_letters('C:/Windows/Fonts/timesi.ttf', 52)
+    generate_letters('./elvish ring nfi.ttf', 60)  # Tengwar like english alphabet for simplicity in next lab
 
-with open('./letters/features.csv', 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile)
-    writer.writerow(['name', 'black weight', 'black weight normalized', 'centre of gravity x', 'centre of gravity y',
-                     'centre of gravity x normalized', 'centre of gravity y normalized', 'moment of inertia x',
-                     'moment of inertia y', 'moment of inertia x normalized', 'moment of inertia y normalized'])
-    for i in range(ord('a'), ord('z') + 1):
-        img = Image.open(f'./letters/{chr(i)}/{chr(i)}.bmp')
-        weight_b, weight_b_rel, grav_centre_x, grav_centre_y, grav_centre_x_rel, grav_centre_y_rel, inert_x, inert_y, inert_x_rel, inert_y_rel = get_features(
-            img)
-        writer.writerow(
-            [chr(i), weight_b, round(weight_b_rel, 2), grav_centre_x, grav_centre_y, round(grav_centre_x_rel, 2),
-             round(grav_centre_y_rel, 2),
-             inert_x, inert_y, round(inert_x_rel, 2), round(inert_y_rel, 2)])
-        profile(img, chr(i))
+    with open('./letters/features.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['name', 'black weight', 'black weight normalized', 'centre of gravity x', 'centre of gravity y',
+                         'centre of gravity x normalized', 'centre of gravity y normalized', 'moment of inertia x',
+                         'moment of inertia y', 'moment of inertia x normalized', 'moment of inertia y normalized'])
+        for i in range(ord('a'), ord('z') + 1):
+            img = Image.open(f'./letters/{chr(i)}/{chr(i)}.bmp')
+            weight_b, weight_b_rel, grav_centre_x, grav_centre_y, grav_centre_x_rel, grav_centre_y_rel, inert_x, inert_y, inert_x_rel, inert_y_rel = get_features(
+                img)
+            writer.writerow(
+                [chr(i), weight_b, round(weight_b_rel, 2), grav_centre_x, grav_centre_y, round(grav_centre_x_rel, 2),
+                 round(grav_centre_y_rel, 2),
+                 inert_x, inert_y, round(inert_x_rel, 2), round(inert_y_rel, 2)])
+            profile(img, chr(i))
