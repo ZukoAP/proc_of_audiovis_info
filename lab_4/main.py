@@ -147,13 +147,15 @@ def profile(img: Image, name):
 
 if __name__ == "__main__":
     # generate_letters('C:/Windows/Fonts/timesi.ttf', 52)
-    generate_letters('./elvish ring nfi.ttf', 60)  # Tengwar like english alphabet for simplicity in next lab
+    # generate_letters('./elvish ring nfi.ttf', 60)  # Tengwar like english alphabet for simplicity in next lab
+    generate_letters('./StandardCelticRuneExtended-Regular.ttf', 60)
 
     with open('./letters/features.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['name', 'black weight', 'black weight normalized', 'centre of gravity x', 'centre of gravity y',
-                         'centre of gravity x normalized', 'centre of gravity y normalized', 'moment of inertia x',
-                         'moment of inertia y', 'moment of inertia x normalized', 'moment of inertia y normalized'])
+        writer.writerow(
+            ['name', 'black weight', 'black weight normalized', 'centre of gravity x', 'centre of gravity y',
+             'centre of gravity x normalized', 'centre of gravity y normalized', 'moment of inertia x',
+             'moment of inertia y', 'moment of inertia x normalized', 'moment of inertia y normalized'])
         for i in range(ord('a'), ord('z') + 1):
             img = Image.open(f'./letters/{chr(i)}/{chr(i)}.bmp')
             weight_b, weight_b_rel, grav_centre_x, grav_centre_y, grav_centre_x_rel, grav_centre_y_rel, inert_x, inert_y, inert_x_rel, inert_y_rel = get_features(
