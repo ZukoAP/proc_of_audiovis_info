@@ -145,7 +145,8 @@ def profile(img: Image, name):
     plt.close()
 
 
-generate_letters('C:/Windows/Fonts/timesi.ttf', 52)
+# generate_letters('C:/Windows/Fonts/timesi.ttf', 52)
+generate_letters('./elvish ring nfi.ttf', 60)
 
 with open('./letters/features.csv', 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
