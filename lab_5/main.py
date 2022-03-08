@@ -62,10 +62,8 @@ plt.savefig(f'./{name}_horiz.png')
 plt.close()
 
 def segmentize(img_array, name):
-    horizontal_hist = img_array.shape[1] - np.sum(img, axis=1)
     h, w = img_array.shape
     position = []
-    str_rows = []
     wstart, wend, w_start, w_end = 0, 0, 0, 0
     vertical_hist = np.sum(img_array, axis=0)
     vert_len = len(vertical_hist)

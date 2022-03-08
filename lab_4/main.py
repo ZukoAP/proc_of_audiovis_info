@@ -1,3 +1,5 @@
+import math
+
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 from lab_1.main import binarize
@@ -82,7 +84,7 @@ def gravity_centre(img: Image):
                 centre_x += x
                 centre_y += y
     weight = weight_black(img)
-    return centre_x // weight, centre_y // weight
+    return math.ceil((centre_x + 1) / weight), math.ceil((centre_y + 1) / weight)
 
 
 def inertial_moments(img: Image):
@@ -107,7 +109,7 @@ def get_features(img: Image):
     grav_centre_x_rel, grav_centre_y_rel = ((grav_centre_x - 1) / w, (grav_centre_y - 1) / h)
     inert_x, inert_y = inertial_moments(img)
     inert_x_rel, inert_y_rel = (
-        (inert_x - 1) / (weight_b ** 2), (inert_y - 1) / (weight_b ** 2))  # Mu'_p,q = Mu_p,q / (Mu_0,0 ^ (1+ (p+q)/2))
+        inert_x / (weight_b ** 2), inert_y / (weight_b ** 2))  # Mu'_p,q = Mu_p,q / (Mu_0,0 ^ (1+ (p+q)/2))
     return weight_b, weight_b_rel, grav_centre_x, grav_centre_y, grav_centre_x_rel, grav_centre_y_rel, inert_x, inert_y, inert_x_rel, inert_y_rel
 
 
@@ -148,7 +150,7 @@ def profile(img: Image, name):
 if __name__ == "__main__":
     # generate_letters('C:/Windows/Fonts/timesi.ttf', 52)
     # generate_letters('./elvish ring nfi.ttf', 60)  # Tengwar like english alphabet for simplicity in next lab
-    generate_letters('./StandardCelticRuneExtended-Regular.ttf', 60)
+    # generate_letters('./StandardCelticRuneExtended-Regular.ttf', 60)
 
     with open('./letters/features.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -157,11 +159,11 @@ if __name__ == "__main__":
              'centre of gravity x normalized', 'centre of gravity y normalized', 'moment of inertia x',
              'moment of inertia y', 'moment of inertia x normalized', 'moment of inertia y normalized'])
         for i in range(ord('a'), ord('z') + 1):
-            img = Image.open(f'./letters/{chr(i)}/{chr(i)}.bmp')
+            image = Image.open(f'./letters/{chr(i)}/{chr(i)}.bmp')
             weight_b, weight_b_rel, grav_centre_x, grav_centre_y, grav_centre_x_rel, grav_centre_y_rel, inert_x, inert_y, inert_x_rel, inert_y_rel = get_features(
-                img)
+                image)
             writer.writerow(
                 [chr(i), weight_b, round(weight_b_rel, 2), grav_centre_x, grav_centre_y, round(grav_centre_x_rel, 2),
                  round(grav_centre_y_rel, 2),
                  inert_x, inert_y, round(inert_x_rel, 2), round(inert_y_rel, 2)])
-            profile(img, chr(i))
+            profile(image, chr(i))
