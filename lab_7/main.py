@@ -65,10 +65,11 @@ def equalize_histogram(gray_image: Image):
     eq_img = np.reshape(np.asarray(eq_img_flat), gray_arr.shape)
 
     equ_img = Image.fromarray(eq_img.astype('uint8'), mode='L')
-    equ_img.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_eq" + sys.argv[1][sys.argv[1].find(".bmp"):])
 
     cumsumhistplot(flat, sys.argv[1][:sys.argv[1].find(".bmp")] + "_hist_orig")
     cumsumhistplot(eq_img_flat, sys.argv[1][:sys.argv[1].find(".bmp")] + "_hist_eq")
+
+    return equ_img
 
 
 def equalize_hist(gray_image):
@@ -121,24 +122,40 @@ def equalize_hist(gray_image):
 
 if __name__ == "__main__":
     img = Image.open(sys.argv[1])
-    # gray_image = sampling.grayscale(img, True)
-    # gray_image.save(sys.argv[1][:sys.argv[1].find(".png")] + ".bmp")
-    #                 + sys.argv[1][sys.argv[1].find(".bmp"):])
-    #
-    # glcm, k = getglcm(gray_image, 2, [0, 90])
-    #
-    # glcm_img = Image.fromarray((glcm * 255 / np.max(glcm)).astype('uint8'), 'L')
-    # glcm_img.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_glcm" + sys.argv[1][sys.argv[1].find(".bmp"):])
-    #
-    # norm_glcm = glcm / k
-    # contrast = 0
-    # for (i, j), p in np.ndenumerate(norm_glcm):
-    #     contrast += p * ((i - j) ** 2)
-    # print(f"Contrast: {round(contrast, 2)}")
-    #
-    # homogeneity = 0
-    # for (i, j), p in np.ndenumerate(norm_glcm):
-    #     homogeneity += p / (1 + ((i - j) ** 2))
-    # print(f"Homogeneity: {round(homogeneity, 2)}")
+    gray_image = sampling.grayscale(img, True)
+    gray_image.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_grayscale" + sys.argv[1][sys.argv[1].find(".bmp"):])
 
-    equalize_histogram(img)
+    glcm, k = getglcm(gray_image, 2, [0, 90])
+
+    glcm_img = Image.fromarray((glcm * 255 / np.max(glcm)).round().astype('uint8'), 'L')
+    glcm_img.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_glcm" + sys.argv[1][sys.argv[1].find(".bmp"):])
+
+    norm_glcm = glcm / k
+    contrast = 0
+    for (i, j), p in np.ndenumerate(norm_glcm):
+        contrast += p * ((i - j) ** 2)
+    print(f"Contrast: {round(contrast, 2)}")
+
+    homogeneity = 0
+    for (i, j), p in np.ndenumerate(norm_glcm):
+        homogeneity += p / (1 + ((i - j) ** 2))
+    print(f"Homogeneity: {round(homogeneity, 2)}")
+
+    eq_img = equalize_histogram(gray_image)
+
+    eq_img.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_eq" + sys.argv[1][sys.argv[1].find(".bmp"):])
+
+    glcm_eq, k_eq = getglcm(eq_img, 2, [0, 90])
+    glcm_img_eq = Image.fromarray((glcm_eq * 255 / np.max(glcm_eq)).round().astype('uint8'), 'L')
+    glcm_img_eq.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_eq_glcm" + sys.argv[1][sys.argv[1].find(".bmp"):])
+
+    norm_glcm_eq = glcm_eq / k_eq
+    contrast = 0
+    for (i, j), p in np.ndenumerate(norm_glcm_eq):
+        contrast += p * ((i - j) ** 2)
+    print(f"Contrast: {round(contrast, 2)}")
+
+    homogeneity = 0
+    for (i, j), p in np.ndenumerate(norm_glcm_eq):
+        homogeneity += p / (1 + ((i - j) ** 2))
+    print(f"Homogeneity: {round(homogeneity, 2)}")
