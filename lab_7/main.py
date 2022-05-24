@@ -125,7 +125,7 @@ if __name__ == "__main__":
     gray_image = sampling.grayscale(img, True)
     gray_image.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_grayscale" + sys.argv[1][sys.argv[1].find(".bmp"):])
 
-    glcm, k = getglcm(gray_image, 2, [0, 90])
+    glcm, k = getglcm(gray_image, 1, [0, 90])
 
     glcm_img = Image.fromarray((glcm * 255 / np.max(glcm)).round().astype('uint8'), 'L')
     glcm_img.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_glcm" + sys.argv[1][sys.argv[1].find(".bmp"):])
@@ -145,7 +145,7 @@ if __name__ == "__main__":
 
     eq_img.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_eq" + sys.argv[1][sys.argv[1].find(".bmp"):])
 
-    glcm_eq, k_eq = getglcm(eq_img, 2, [0, 90])
+    glcm_eq, k_eq = getglcm(eq_img, 1, [0, 90])
     glcm_img_eq = Image.fromarray((glcm_eq * 255 / np.max(glcm_eq)).round().astype('uint8'), 'L')
     glcm_img_eq.save(sys.argv[1][:sys.argv[1].find(".bmp")] + "_eq_glcm" + sys.argv[1][sys.argv[1].find(".bmp"):])
 
